@@ -22,10 +22,10 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-purple">
+      <header className="bg-emerald-500">
         <div className="max-w-280 mx-auto pt-8 px-4 pb-48 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-purple-light flex items-center justify-center text-white font-bold text-xl">
+            <div className="w-10 h-10 rounded-full bg-emerald-200 flex items-center justify-center text-white font-bold text-xl">
               <CurrencyDollarIcon size={24} />
             </div>
             <span className="text-white text-2xl font-semibold">Digital Money</span>
