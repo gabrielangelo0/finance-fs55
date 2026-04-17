@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/json-server/schema.json",
+  "transactions": [
+    {
+      "title": "Shein",
+      "amount": "15",
+      "category": "Compras",
+      "date": "15/04/2026",
+      "id": 1
+    },
+    {
+      "title": "Amazon",
+      "amount": "230",
+      "category": "Compras",
+      "date": "15/04/2026",
+      "id": 2
+    }
+  ]
+}

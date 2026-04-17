@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   ArrowCircleUpIcon,
@@ -6,32 +6,78 @@ import {
   CurrencyDollarIcon,
   XIcon,
 } from "@phosphor-icons/react";
+import axios from "axios";
 import { useState } from "react";
 
 export default function Home() {
   const [open, setOpen] = useState(false);
 
+  const [title, setTitle] = useState("");
+  const [amount, setAmount] = useState(0);
+  const [category, setCategory] = useState("");
+
+  const [transactions, setTransactions] = useState([]);
+
+  console.log("title: ", title);
+  console.log("amount: ", amount);
+  console.log("category: ", category);
+
   function handleOpenModal() {
-    setOpen(true)
+    setOpen(true);
   }
 
   function handleCloseModal() {
-    setOpen(false)
+    setOpen(false);
+  }
+
+  function handleChangeTitle(event) {
+    setTitle(event.target.value);
+  }
+
+  function handleChangeAmount(event) {
+    setAmount(event.target.value);
+  }
+
+  function handleChangeCategory(event) {
+    setCategory(event.target.value);
+  }
+
+  async function getTransactions() {
+    const resposta = await axios.get("http://localhost:3001/transactions");
+
+    setTransactions(resposta.data);
+    console.log("resposta: ", resposta.data);
+  }
+
+  getTransactions();
+
+  function handleSubmit() {
+    axios.post("http://localhost:3001/transactions", {
+      title: title,
+      amount: amount,
+      category: category,
+      date: "15/04/2026",
+    });
   }
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-emerald-500">
+      <header className="bg-purple">
         <div className="max-w-280 mx-auto pt-8 px-4 pb-48 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-emerald-200 flex items-center justify-center text-white font-bold text-xl">
+            <div className="w-10 h-10 rounded-full bg-purple-light flex items-center justify-center text-white font-bold text-xl">
               <CurrencyDollarIcon size={24} />
             </div>
-            <span className="text-white text-2xl font-semibold">Digital Money</span>
+            <span className="text-white text-2xl font-semibold">
+              Digital Money
+            </span>
           </div>
 
-          <button onClick={handleOpenModal} className="bg-purple-light text-white border-none py-3 px-8 rounded cursor-pointer font-medium text-base hover:brightness-90 transition-all">
+          <button
+            onClick={handleOpenModal}
+            className="bg-purple-light text-white border-none py-3 px-8 rounded cursor-pointer font-medium text-base hover:brightness-90 transition-all"
+          >
             Nova transação
           </button>
         </div>
@@ -68,14 +114,15 @@ export default function Home() {
               <p className="text-base">Total</p>
               <CurrencyDollarIcon size={32} />
             </header>
-            <strong className="block mt-4 text-3xl font-medium">
-              R$ 0,00
-            </strong>
+            <strong className="block mt-4 text-3xl font-medium">R$ 0,00</strong>
           </div>
         </div>
 
         {/* Transactions Table */}
-        <table className="w-full" style={{ borderSpacing: "0 0.5rem", borderCollapse: "separate" }}>
+        <table
+          className="w-full"
+          style={{ borderSpacing: "0 0.5rem", borderCollapse: "separate" }}
+        >
           <thead>
             <tr>
               <th className="text-text-body font-normal py-4 px-8 text-left leading-6">
@@ -94,14 +141,38 @@ export default function Home() {
           </thead>
           <tbody>
             {/* As linhas da tabela serão renderizadas aqui */}
+            {transactions.map((transaction) => {
+              return (
+                <tr key={transaction.id}>
+                  <td>{transaction.title}</td>
+                  <td>{Number(transaction.amount).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
+                  <td>{transaction.category}</td>
+                  <td>{transaction.date}</td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </main>
 
       {/* Modal */}
-      <div className={"fixed inset-0 bg-overlay items-center justify-center z-50 " + (open == true ? "flex" : "hidden")}>
-        <div className="bg-background p-12 rounded w-full max-w-lg relative">
-          <button onClick={handleCloseModal} className="absolute top-6 right-6 bg-transparent border-none text-2xl cursor-pointer text-text-body hover:text-text-title transition-colors">
+      <div
+        onClick={handleCloseModal}
+        className={
+          "fixed inset-0 bg-overlay items-center justify-center z-50 " +
+          (open == true ? "flex" : "hidden")
+        }
+      >
+        <div
+          onClick={(ev) => {
+            ev.stopPropagation();
+          }}
+          className="bg-background p-12 rounded w-full max-w-lg relative"
+        >
+          <button
+            onClick={handleCloseModal}
+            className="absolute top-6 right-6 bg-transparent border-none text-2xl cursor-pointer text-text-body hover:text-text-title transition-colors"
+          >
             <XIcon size={24} />
           </button>
 
@@ -113,12 +184,14 @@ export default function Home() {
             <input
               type="text"
               placeholder="Titulo"
+              onChange={handleChangeTitle}
               className="w-full py-4 px-6 rounded border border-input-border bg-input-bg text-base mb-4 outline-none placeholder:text-text-body"
             />
 
             <input
               type="number"
               placeholder="Valor"
+              onChange={handleChangeAmount}
               className="w-full py-4 px-6 rounded border border-input-border bg-input-bg text-base mb-4 outline-none placeholder:text-text-body"
             />
 
@@ -143,10 +216,12 @@ export default function Home() {
             <input
               type="text"
               placeholder="Categoria"
+              onChange={handleChangeCategory}
               className="w-full py-4 px-6 rounded border border-input-border bg-input-bg text-base mb-6 outline-none placeholder:text-text-body"
             />
 
             <button
+              onClick={handleSubmit}
               type="submit"
               className="w-full py-5 bg-green text-white border-none rounded text-base font-semibold cursor-pointer hover:brightness-90 transition-all"
             >
