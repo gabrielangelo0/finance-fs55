@@ -7,7 +7,7 @@ import {
   XIcon,
 } from "@phosphor-icons/react";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const [open, setOpen] = useState(false);
@@ -49,7 +49,11 @@ export default function Home() {
     console.log("resposta: ", resposta.data);
   }
 
-  getTransactions();
+  useEffect(() => {
+    getTransactions();
+  }, [])
+
+  // getTransactions();
 
   function handleSubmit() {
     axios.post("http://localhost:3001/transactions", {
