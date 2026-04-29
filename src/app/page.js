@@ -7,8 +7,8 @@ import {
   CurrencyDollarIcon,
   XIcon,
 } from "@phosphor-icons/react";
-import axios from "axios";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Home() {
   const [open, setOpen] = useState(false);
@@ -56,6 +56,8 @@ export default function Home() {
   useEffect(() => {
     getTransactions();
   }, [open, amount]);
+
+  
 
   // getTransactions();
 
