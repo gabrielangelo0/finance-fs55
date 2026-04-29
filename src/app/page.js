@@ -1,5 +1,6 @@
 "use client";
 
+import instance from "@/lib/api";
 import {
   ArrowCircleUpIcon,
   ArrowCircleDownIcon,
@@ -43,7 +44,10 @@ export default function Home() {
   }
 
   async function getTransactions() {
-    const resposta = await axios.get("http://localhost:3001/transactions");
+    const resposta = await instance({
+      url: "transactions",
+      method: "GET",
+    });
 
     setTransactions(resposta.data);
     console.log("resposta: ", resposta.data);
@@ -51,7 +55,7 @@ export default function Home() {
 
   useEffect(() => {
     getTransactions();
-  }, [])
+  }, [open, amount]);
 
   // getTransactions();
 
@@ -149,11 +153,16 @@ export default function Home() {
               return (
                 <tr key={transaction.id}>
                   <td>{transaction.title}</td>
-                  <td>{Number(transaction.amount).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
+                  <td>
+                    {Number(transaction.amount).toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </td>
                   <td>{transaction.category}</td>
                   <td>{transaction.date}</td>
                 </tr>
-              )
+              );
             })}
           </tbody>
         </table>

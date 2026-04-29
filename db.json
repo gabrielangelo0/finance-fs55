@@ -14,6 +14,13 @@
       "category": "Compras",
       "date": "15/04/2026",
       "id": 2
+    },
+    {
+      "title": "Shoppee",
+      "amount": "10",
+      "category": "Compras",
+      "date": "15/04/2026",
+      "id": 3
     }
   ]
 }
