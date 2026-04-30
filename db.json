@@ -21,6 +21,22 @@
       "category": "Compras",
       "date": "15/04/2026",
       "id": 3
+    },
+    {
+      "title": "Mercado Livre",
+      "amount": "130",
+      "category": "Compras",
+      "date": "15/04/2026",
+      "type": "saida",
+      "id": 4
+    },
+    {
+      "title": "Salario",
+      "amount": "237000",
+      "category": "Finança",
+      "date": "15/04/2026",
+      "type": "entrada",
+      "id": 5
     }
   ]
 }

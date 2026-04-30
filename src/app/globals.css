@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --color-purple: #C70D66;
+  --color-purple: #c70d66;
   --color-purple-light: #ce4085;
   --color-green: #33cc95;
   --color-green-light: #44cc9a;
@@ -20,4 +20,5 @@
 body {
   background-color: #e8e8eb;
   color: #171717;
+  font-family: "Poppins", sans-serif;
 }
