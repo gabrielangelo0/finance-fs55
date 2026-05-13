@@ -20,11 +20,7 @@ export default function Login() {
 
   const router = useRouter();
 
-  console.log("email: ", email, "password: ", password);
-
   const token = typeof window !== "undefined" ? window.localStorage.getItem("token") : null;
-
-  console.log(token);
 
   useEffect(() => {
     if (token) {
@@ -43,7 +39,6 @@ export default function Login() {
 
       localStorage.setItem("user", JSON.stringify(resposta.data.user));
       localStorage.setItem("token", resposta.data.token);
-      console.log(resposta.data);
 
       router.push("/dashboard");
     } catch (error) {
