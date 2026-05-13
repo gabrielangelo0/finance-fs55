@@ -124,6 +124,7 @@ export default function Login() {
 
           <button
             type="submit"
+            id="btn-submit"
             className="w-full bg-green hover:bg-green-light transition-colors text-white font-semibold rounded py-4 cursor-pointer"
           >
             Entrar
