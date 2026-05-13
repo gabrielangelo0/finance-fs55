@@ -22,7 +22,7 @@ export default function Login() {
 
   console.log("email: ", email, "password: ", password);
 
-  const token = localStorage.getItem("token")
+  const token = typeof window !== "undefined" ? window.localStorage.getItem("token") : null;
 
   console.log(token);
 
