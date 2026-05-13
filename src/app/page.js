@@ -82,6 +82,7 @@ export default function Login() {
               <input
                 className="w-full outline-0"
                 type="email"
+                id="email"
                 onChange={(ev) => setEmail(ev.target.value)}
                 placeholder="E-mail"
               />
@@ -94,6 +95,7 @@ export default function Login() {
                   className="w-full outline-0"
                   type={showPassword ? "text" : "password"}
                   placeholder="Senha"
+                  id="senha"
                   onChange={(ev) => setPassword(ev.target.value)}
                 />
                 <button
