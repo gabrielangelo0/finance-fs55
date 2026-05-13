@@ -35,4 +35,21 @@ describe('Testes de ponta a ponta na tela de Login', () => {
     // Verificar se a URL mudou para a página de dashboard
     cy.url().should('include', '/dashboard')
   })
+
+  // Forçar um erro de login para verificar se a aplicação lida corretamente com credenciais inválidas
+  it('Deve exibir um alerta de erro ao tentar fazer login com credenciais inválidas', () => {
+    cy.visit('http://localhost:3000/')
+
+    // Preencher o campo de email e senha com credenciais inválidas
+    cy.get('#email').click().type('gabriel@gmail.com')
+    cy.get('#senha').click().type('senhaerrada')
+
+    // Clicar no botão de submit
+    cy.get('#btn-submit').click()
+
+    // Verificar se o alerta de erro foi exibido
+    cy.on('window:alert', (str) => {
+      expect(str).to.equal('Ocorreu um erro')
+    })
+  })
 })
