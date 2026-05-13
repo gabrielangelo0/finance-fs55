@@ -1,11 +1,55 @@
-'use client'
+"use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CurrencyDollarIcon, EnvelopeSimpleIcon, EyeIcon, EyeSlashIcon, LockKeyIcon } from "@phosphor-icons/react";
+import {
+  CurrencyDollarIcon,
+  EnvelopeSimpleIcon,
+  EyeIcon,
+  EyeSlashIcon,
+  LockKeyIcon,
+} from "@phosphor-icons/react";
+import instance from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const router = useRouter();
+
+  console.log("email: ", email, "password: ", password);
+
+  const token = localStorage.getItem("token")
+
+  console.log(token);
+
+  useEffect(() => {
+    if (token) {
+      router.push('/dashboard')
+    }
+  }, [])
+
+  async function handleSubmit(ev) {
+    ev.preventDefault();
+    try {
+      const resposta = await instance({
+        method: "post",
+        url: "/auth/login",
+        data: { email, password },
+      });
+
+      localStorage.setItem("user", JSON.stringify(resposta.data.user));
+      localStorage.setItem("token", resposta.data.token);
+      console.log(resposta.data);
+
+      router.push("/dashboard");
+    } catch (error) {
+      alert("Ocorreu um erro");
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -20,21 +64,32 @@ export default function Login() {
               Digital Money
             </span>
           </div>
-
         </div>
       </header>
 
       <main className="w-full h-full flex justify-center items-center">
-        <form className="w-96 bg-white -mt-40 drop-shadow-2xl rounded p-8 space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className="w-96 bg-white -mt-40 drop-shadow-2xl rounded p-8 space-y-6"
+        >
           <div className="space-y-1">
-            <h1 className="text-2xl font-semibold text-text-title">Acesse sua conta</h1>
-            <p className="text-text-body">Gerencie suas finanças com o Digital Money.</p>
+            <h1 className="text-2xl font-semibold text-text-title">
+              Acesse sua conta
+            </h1>
+            <p className="text-text-body">
+              Gerencie suas finanças com o Digital Money.
+            </p>
           </div>
 
           <div className="space-y-4">
             <div className="flex items-center gap-3 bg-input-bg outline-input-border outline rounded p-4">
               <EnvelopeSimpleIcon size={24} color="#969CB3" />
-              <input className="w-full outline-0" type="email" placeholder="E-mail" />
+              <input
+                className="w-full outline-0"
+                type="email"
+                onChange={(ev) => setEmail(ev.target.value)}
+                placeholder="E-mail"
+              />
             </div>
 
             <div>
@@ -44,6 +99,7 @@ export default function Login() {
                   className="w-full outline-0"
                   type={showPassword ? "text" : "password"}
                   placeholder="Senha"
+                  onChange={(ev) => setPassword(ev.target.value)}
                 />
                 <button
                   type="button"
@@ -51,11 +107,18 @@ export default function Login() {
                   className="text-text-body cursor-pointer"
                   aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                 >
-                  {showPassword ? <EyeSlashIcon size={24} /> : <EyeIcon size={24} />}
+                  {showPassword ? (
+                    <EyeSlashIcon size={24} />
+                  ) : (
+                    <EyeIcon size={24} />
+                  )}
                 </button>
               </div>
               <div className="flex justify-end mt-2">
-                <Link href="/forgot-password" className="text-text-body text-sm hover:underline">
+                <Link
+                  href="/forgot-password"
+                  className="text-text-body text-sm hover:underline"
+                >
                   Esqueceu a senha?
                 </Link>
               </div>
@@ -71,7 +134,10 @@ export default function Login() {
 
           <p className="text-center text-text-body text-sm">
             Ainda não tem conta?{" "}
-            <Link href="/signup" className="text-purple font-bold hover:underline">
+            <Link
+              href="/signup"
+              className="text-purple font-bold hover:underline"
+            >
               Cadastre-se
             </Link>
           </p>
