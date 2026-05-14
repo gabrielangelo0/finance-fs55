@@ -6,12 +6,17 @@ import {
   ArrowCircleDownIcon,
   CurrencyDollarIcon,
   XIcon,
+  CircleNotchIcon,
 } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
-import axios from "axios";
+
+import React from "react";
+import { Button, message, Space } from "antd";
 
 export default function Home() {
   const [open, setOpen] = useState(false);
+
+  const [loading, setLoading] = useState(true);
 
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState(0);
@@ -24,6 +29,29 @@ export default function Home() {
   const [allEntry, setAllEntry] = useState(0);
   const [allExit, setAllExit] = useState(0);
   const [total, setTotal] = useState(0);
+
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const success = () => {
+    messageApi.open({
+      type: "success",
+      content: "Transação cadastrada com sucesso!",
+    });
+  };
+
+  const error = () => {
+    messageApi.open({
+      type: "error",
+      content: "Por favor, preencha todos os campos para cadastrar a transação",
+    });
+  };
+
+  const warning = () => {
+    messageApi.open({
+      type: "warning",
+      content: "This is a warning message",
+    });
+  };
 
   const sumTotal = allEntry - allExit;
 
@@ -55,6 +83,17 @@ export default function Home() {
     setCategory(event.target.value);
   }
 
+  async function getTransactions() {
+    setLoading(true);
+    const resposta = await instance({
+      url: "transactions",
+      method: "GET",
+    });
+
+    setTransactions(resposta.data);
+    setLoading(false);
+  }
+
   useEffect(() => {
     function sumAllEntry() {
       let somaAcumulada = 0;
@@ -84,21 +123,20 @@ export default function Home() {
 
     sumAllEntry();
     sumAllExit();
-    async function getTransactions() {
-      const resposta = await instance({
-        url: "transactions",
-        method: "GET",
-      });
-
-      setTransactions(resposta.data);
-    }
 
     getTransactions();
   }, [transactions.length]);
 
   // getTransactions();
 
-  async function handleSubmit() {
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    if (!title || !amount || !category) {
+      error();
+      return;
+    }
+
     await instance({
       url: "transactions",
       method: "post",
@@ -110,10 +148,16 @@ export default function Home() {
         type: typeOfTransaction,
       },
     });
+
+    success();
+
+    getTransactions();
+    setOpen(false);
   }
 
   return (
     <div className="min-h-screen bg-background">
+      {contextHolder}
       {/* Header */}
       <header className="bg-purple">
         <div className="max-w-280 mx-auto pt-8 px-4 pb-48 flex items-center justify-between">
@@ -128,6 +172,7 @@ export default function Home() {
 
           <button
             onClick={handleOpenModal}
+            id="new-transaction"
             className="bg-purple-light text-white border-none py-3 px-8 rounded cursor-pointer font-medium text-base hover:brightness-90 transition-all"
           >
             Nova transação
@@ -182,52 +227,57 @@ export default function Home() {
         </div>
 
         {/* Transactions Table */}
-        <table
-          className="w-full"
-          style={{ borderSpacing: "0 0.5rem", borderCollapse: "separate" }}
-        >
-          <thead>
-            <tr>
-              <th className="text-text-body font-normal py-4 px-8 text-left leading-6">
-                Titulo
-              </th>
-              <th className="text-text-body font-normal py-4 px-8 text-left leading-6">
-                Valor
-              </th>
-              <th className="text-text-body font-normal py-4 px-8 text-left leading-6">
-                Categoria
-              </th>
-              <th className="text-text-body font-normal py-4 px-8 text-left leading-6">
-                Data
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* As linhas da tabela serão renderizadas aqui */}
-            {transactions.map((transaction) => {
-              return (
-                <tr key={transaction.id} className="bg-white p-3">
-                  <td className="py-7 px-8">{transaction.title}</td>
-                  <td
-                    className={
-                      "px-8 text-3xl " +
-                      (transaction.type === "entrada"
-                        ? "text-emerald-600"
-                        : "text-red-600")
-                    }
-                  >
-                    {Number(transaction.amount).toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
-                  </td>
-                  <td className="px-8">{transaction.category}</td>
-                  <td className="px-8">{transaction.date}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+
+        {loading == true ? (
+          <CircleNotchIcon className="animate-spin" weight="bold" size={32} />
+        ) : (
+          <table
+            className="w-full"
+            style={{ borderSpacing: "0 0.5rem", borderCollapse: "separate" }}
+          >
+            <thead>
+              <tr>
+                <th className="text-text-body font-normal py-4 px-8 text-left leading-6">
+                  Titulo
+                </th>
+                <th className="text-text-body font-normal py-4 px-8 text-left leading-6">
+                  Valor
+                </th>
+                <th className="text-text-body font-normal py-4 px-8 text-left leading-6">
+                  Categoria
+                </th>
+                <th className="text-text-body font-normal py-4 px-8 text-left leading-6">
+                  Data
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* As linhas da tabela serão renderizadas aqui */}
+              {transactions.map((transaction) => {
+                return (
+                  <tr key={transaction.id} className="bg-white p-3">
+                    <td className="py-7 px-8">{transaction.title}</td>
+                    <td
+                      className={
+                        "px-8 text-3xl " +
+                        (transaction.type === "entrada"
+                          ? "text-emerald-600"
+                          : "text-red-600")
+                      }
+                    >
+                      {Number(transaction.amount).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                    </td>
+                    <td className="px-8">{transaction.category}</td>
+                    <td className="px-8">{transaction.date}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </main>
 
       {/* Modal */}
@@ -258,6 +308,7 @@ export default function Home() {
           <form>
             <input
               type="text"
+              id="title"
               placeholder="Titulo"
               onChange={handleChangeTitle}
               className="w-full py-4 px-6 rounded border border-input-border bg-input-bg text-base mb-4 outline-none placeholder:text-text-body"
@@ -265,6 +316,7 @@ export default function Home() {
 
             <input
               type="number"
+              id="amount"
               placeholder="Valor"
               onChange={handleChangeAmount}
               className="w-full py-4 px-6 rounded border border-input-border bg-input-bg text-base mb-4 outline-none placeholder:text-text-body"
@@ -303,6 +355,7 @@ export default function Home() {
             <input
               type="text"
               placeholder="Categoria"
+              id="category"
               onChange={handleChangeCategory}
               className="w-full py-4 px-6 rounded border border-input-border bg-input-bg text-base mb-6 outline-none placeholder:text-text-body"
             />
@@ -310,6 +363,7 @@ export default function Home() {
             <button
               onClick={handleSubmit}
               type="submit"
+              id="btn-register"
               className="w-full py-5 bg-green text-white border-none rounded text-base font-semibold cursor-pointer hover:brightness-90 transition-all"
             >
               Cadastrar
